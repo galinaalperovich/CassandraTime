@@ -1,5 +1,5 @@
 <h3>“Cassandra and Time Series analysis”</h3>
-_Final project on Big Data Analytics course in Harvard Extension school_
+Final project on Big Data Analytics course in Harvard Extension school
 
 Student name: Galina Alperovich
 
