@@ -1,12 +1,11 @@
-Final project on Big Data Analytics course in Harvard Extension school
-
-The topic name is “Cassandra and Time Series analysis”
+<h3>“Cassandra and Time Series analysis”</h3>
+_Final project on Big Data Analytics course in Harvard Extension school_
 
 Student name: Galina Alperovich
 
 May, 2017
 
-Abstract
+<h3>Abstract</h3>
 
 One of the most common use cases for Cassandra NoSQL is tracking time-series data. The reason for this is Cassandra’s data model which is an excellent fit for handling data in sequence regardless of datatype or size. Cassandra has highly fast writing speed, built-in replication across nodes and high availability with no single point of failure. Since NoSQL databases developed in a different way than traditional RDMS, you will not find ad-hoc quires for joining, grouping and other standard operations from SQL. 
 
@@ -16,7 +15,7 @@ The purpose of this project is to demonstrate how Cassandra can be used for fina
 
 The web application is hosted on AWS and available online. Full step-by-step documentation from project start to deployment is provided. You can reproduce the same application from scratch.
 
-Application URL: http://34.202.35.11:5006/CassandraTime
+**Application URL:** http://34.202.35.11:5006/CassandraTime
 
 YouTube video (2 min): https://youtu.be/9UKfyR77bG8
 
