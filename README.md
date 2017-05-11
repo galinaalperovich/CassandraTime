@@ -1,4 +1,4 @@
-Final project on Big Data Analytics course in Harvard Extension course
+Final project on Big Data Analytics course in Harvard Extension school
 
 The topic name is “Cassandra and Time Series analysis”
 
@@ -17,3 +17,8 @@ The purpose of this project is to demonstrate how Cassandra can be used for fina
 The web application is hosted on AWS and available online. Full step-by-step documentation from project start to deployment is provided. You can reproduce the same application from scratch.
 
 Application URL: http://34.202.35.11:5006/CassandraTime
+
+YouTube video (2 min): https://youtu.be/9UKfyR77bG8
+
+YouTube video (15 min): https://youtu.be/4VBh6UQd6z8
+
