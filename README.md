@@ -21,3 +21,5 @@ YouTube video (2 min): https://youtu.be/9UKfyR77bG8
 
 YouTube video (15 min): https://youtu.be/4VBh6UQd6z8
 
+Full documentation with the report read in Documentation.pdf
+
