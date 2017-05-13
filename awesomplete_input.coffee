@@ -1,6 +1,7 @@
 # awesomplete_input.coffee
 """
 Nice autocomplete from this thread: https://github.com/bokeh/bokeh/issues/5596
+Project URL: https://leaverou.github.io/awesomplete/
 """
 
 import {TextInput, TextInputView} from "models/widgets/text_input"

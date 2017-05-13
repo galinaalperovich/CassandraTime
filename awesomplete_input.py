@@ -2,8 +2,10 @@ from bokeh.core.properties import List, String, Int, Bool
 from bokeh.models.widgets import TextInput
 
 """
-Nice autocomplete from this thread: https://github.com/bokeh/bokeh/issues/5596
+Nice autocomplete plugin from this thread: https://github.com/bokeh/bokeh/issues/5596
+Project URL: https://leaverou.github.io/awesomplete/
 """
+
 
 class AwesompleteInput(TextInput):
     """ Single-line input widget with auto-completion. """

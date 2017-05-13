@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 from bokeh.io import curdoc
 from bokeh.layouts import row, column
-from bokeh.models import ColumnDataSource, Div, AutocompleteInput
-from bokeh.models.widgets import Select, TableColumn, DataTable, \
-    DateFormatter, Button
+from bokeh.models import ColumnDataSource, Div
+from bokeh.models.widgets import (Select, TableColumn, DataTable,
+                                  DateFormatter, Button)
 from bokeh.plotting import figure
 
 from awesomplete_input import AwesompleteInput
@@ -16,7 +16,7 @@ from utils import get_ticker_to_company, predict, get_cassandra_session
 This scrip produces the dashboard with time series analysis.
 Data is loaded from Cassandra db.
 Run script from terminal: bokeh serve --show app.py
-
+Read Documentation.pdf
 """
 import sys
 
@@ -63,16 +63,14 @@ def update_aggregated_data(ticker_data):
 
 
 def aggregate(data, how):
-    aggregated_df = data.resample(how).mean()
-    return aggregated_df
+    return data.resample(how).mean()
 
 
-def update_company_select(selected=None):
+def update_company_select():
     clean_prediction()
-    company_name = company_chooser.value
-    company_data = get_company_data(company_name)
+    company_data = get_company_data(company_chooser.value)
     update_aggregated_data(company_data)
-    update_current_data('Daily')
+    update_current_data('Monthly')
     update_indicator_select()
 
 
@@ -134,6 +132,7 @@ def clean_prediction():
 
 
 # --- HANDLERS WHICH TRACK THE CHANGE OF SELECTORS -----
+# handlers must have signature foo(attrname, old, new)
 
 def company_change_handler(attrname, old, new):
     update_company_select()
@@ -165,19 +164,16 @@ def update_button_predict():
 # --- DATA SOURCES FOR INTERACTIVE WIDGETS -----
 series_source = ColumnDataSource(data=dict())
 static_series_source = ColumnDataSource(data=dict())
-current_prediction_source = ColumnDataSource(data=dict({'date': [], 'value': [], 'lower': [], 'upper': []}))
-patch_confidence_source = ColumnDataSource(data=dict({'xs': [], 'ys': []}))
+current_prediction_source = ColumnDataSource(data={'date': [], 'value': [], 'lower': [], 'upper': []})
+patch_confidence_source = ColumnDataSource(data={'xs': [], 'ys': []})
 
 current_data = ColumnDataSource(data=dict())
 summary_data = ColumnDataSource(data=dict())
 aggregated_current_data = {}
 
-tools = 'pan,wheel_zoom,xbox_select,reset'
-
 # --- COMPANY CHOOSER -----
 company_label = Div(text='<h4>1 step: Choose the company</h4>', width=200)
 company_chooser = AwesompleteInput(value='Facebook, Inc.', completions=COMPANIES_LIST)
-# company_chooser = AutocompleteInput(value='Facebook, Inc.', completions=COMPANIES_LIST)
 company_chooser.on_change('value', company_change_handler)
 
 # --- INDICATOR CHOOSER -----
@@ -190,7 +186,7 @@ indicator_chooser.on_change('value', indicator_change_handler)
 # --- AGGREGATOR CHOOSER -----
 aggregator_label = Div(text='<h4>3 step: How to aggregate?</h4>', width=200)
 AGGREGATORS = ['Daily', 'Monthly', 'Quarterly', 'Annually']
-aggregator_chooser = Select(value='Daily', options=AGGREGATORS, width=151)
+aggregator_chooser = Select(value='Monthly', options=AGGREGATORS, width=151)
 aggregator_chooser.on_change('value', aggregator_select_handler)
 
 # --- DESCRIPTION TEXT -----
@@ -198,7 +194,9 @@ content_filename = 'description.html'
 description = Div(text=open(content_filename).read(), render_as_text=False, width=900)
 
 # --- TIME SERIES PLOT -----
-time_series = figure(plot_width=900, plot_height=200, tools=tools, x_axis_type='datetime', active_drag="xbox_select")
+GRAPH_TOOLS = 'pan,wheel_zoom,xbox_select,reset'
+time_series = figure(plot_width=900, plot_height=200, tools=GRAPH_TOOLS, x_axis_type='datetime',
+                     active_drag="xbox_select")
 
 # Time series line for original data
 time_series.line('date', 'value', source=static_series_source)

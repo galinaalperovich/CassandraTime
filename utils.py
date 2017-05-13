@@ -4,39 +4,34 @@ from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 from fbprophet import Prophet
 
+KEYSPACE = "wiki_price_keyspace"
+PERIODS_TO_PREDICT = {'D': 365, 'MS': 12, 'AS': 10, 'QS': 8}
 
-def get_data_by(query, session):
+
+def get_data(query, session):
     data = session.execute_async(query)
     rows = data.result()
-    data = rows._current_rows
-    return data
+    return rows._current_rows
 
 
 def get_ticker_to_company(session):
     query = "SELECT * FROM tickers"
-    tickers = get_data_by(query, session)
+    tickers = get_data(query, session)
     query = "SELECT distinct ticker FROM wikiprice"
-    tickers_wiki = get_data_by(query, session)
+    tickers_wiki = get_data(query, session)
     return pd.merge(tickers_wiki, tickers, on='ticker')
-
-
-periods = {'D': 365, 'MS': 12, 'AS': 10, 'QS': 8}
 
 
 def predict(series):
     ts_log = np.log(series)
     freq = ts_log.index.freqstr
-    if 'D' in freq:
-        after = len(series) // 4
-    else:
-        after = len(series)
-    ts_log_cut = ts_log[-after:]
-    df = pd.DataFrame({'y': ts_log_cut.tolist(), 'ds': ts_log_cut.index})
+    after = get_lags_back(freq, series)
+    df_fit = get_df_for_fit(after, ts_log)
     model = Prophet()
     print('Fitting.......')
-    model.fit(df)
-    freq_key = [key for key in periods.keys() if key in freq][0]
-    per = periods[freq_key]
+    model.fit(df_fit)
+    freq_key = [key for key in PERIODS_TO_PREDICT.keys() if key in freq][0]
+    per = PERIODS_TO_PREDICT[freq_key]
     future = model.make_future_dataframe(periods=per, freq=freq_key)
     print('Prediction.......')
     forecast = model.predict(future)
@@ -47,13 +42,26 @@ def predict(series):
     return result_df
 
 
-def pandas_factory(colnames, rows):
-    return pd.DataFrame(rows, columns=colnames)
+def get_df_for_fit(after, ts_log):
+    ts_log_cut = ts_log[-after:]  # when there are lot of data it is long to predict
+    df = pd.DataFrame({'y': ts_log_cut.tolist(), 'ds': ts_log_cut.index})
+    return df
+
+
+def get_lags_back(freq, series):
+    if 'D' in freq:
+        after = len(series) // 4
+    else:
+        after = len(series)
+    return after
+
+
+def pandas_factory(column_names, rows):
+    return pd.DataFrame(rows, columns=column_names)
 
 
 def get_cassandra_session():
-    KEYSPACE = "wiki_price_keyspace"
-    auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+    auth_provider = get_auth_provider()
     cluster = Cluster(['127.0.0.1'], auth_provider=auth_provider)
     session = cluster.connect()
     session.set_keyspace(KEYSPACE)
@@ -62,10 +70,5 @@ def get_cassandra_session():
     return session
 
 
-# For Cassandra username and password
-# def getCredential(self):
-#     return {'username': 'cassandra', 'password': 'cassandra'}
-
-
-def getCredential(self):
-    return {'username': '', 'password': ''}
+def get_auth_provider():
+    return PlainTextAuthProvider(username='cassandra', password='cassandra')
