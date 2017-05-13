@@ -6,6 +6,8 @@ from fbprophet import Prophet
 
 KEYSPACE = "wiki_price_keyspace"
 PERIODS_TO_PREDICT = {'D': 365, 'MS': 12, 'AS': 10, 'QS': 8}
+CASSANDRA_USER = 'cassandra'
+CASSANDRA_PASSWORD = 'cassandra'
 
 
 def get_data(query, session):
@@ -23,9 +25,13 @@ def get_ticker_to_company(session):
 
 
 def predict(series):
+    """
+    Returns prediction + lower and upper bounds for uncertainty interval 80%
+    :return pandas.DataFrame
+    """
     ts_log = np.log(series)
     freq = ts_log.index.freqstr
-    after = get_lags_back(freq, series)
+    after = get_num_lags_back(freq, series)
     df_fit = get_df_for_fit(after, ts_log)
     model = Prophet()
     print('Fitting.......')
@@ -44,16 +50,11 @@ def predict(series):
 
 def get_df_for_fit(after, ts_log):
     ts_log_cut = ts_log[-after:]  # when there are lot of data it is long to predict
-    df = pd.DataFrame({'y': ts_log_cut.tolist(), 'ds': ts_log_cut.index})
-    return df
+    return pd.DataFrame({'y': ts_log_cut.tolist(), 'ds': ts_log_cut.index})
 
 
-def get_lags_back(freq, series):
-    if 'D' in freq:
-        after = len(series) // 4
-    else:
-        after = len(series)
-    return after
+def get_num_lags_back(freq, series):
+    return len(series) // 4 if 'D' in freq else len(series)
 
 
 def pandas_factory(column_names, rows):
@@ -71,4 +72,4 @@ def get_cassandra_session():
 
 
 def get_auth_provider():
-    return PlainTextAuthProvider(username='cassandra', password='cassandra')
+    return PlainTextAuthProvider(username=CASSANDRA_USER, password=CASSANDRA_PASSWORD)

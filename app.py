@@ -38,19 +38,17 @@ def load_ticker_data(ticker):
     Load data from Cassandra database for given ticker (symbol)
     """
     query = "SELECT * FROM wikiprice WHERE ticker=%s"
-    data = SESSIONS.execute_async(query, [ticker])
-    rows = data.result()
-    data = rows._current_rows
+    raw_data = SESSIONS.execute_async(query, [ticker])
+    data = raw_data.result()._current_rows
     data['date'] = pd.to_datetime(data['date'], format="%Y-%m/%d %H:%M:%S")
-    data = data.set_index('date')
-    return data
+    return data.set_index('date')
 
 
 def get_ticker_by_company(company_name):
     return TICKER_TO_COMPANY_NAME[TICKER_TO_COMPANY_NAME.name == company_name].ticker.iloc[0]
 
 
-def update_aggregated_data(ticker_data):
+def update_aggregated_current_data(ticker_data):
     global aggregated_current_data
     ticker_original = ticker_data.resample('D').fillna('nearest')
     aggregated_current_data = {
@@ -69,7 +67,7 @@ def aggregate(data, how):
 def update_company_select():
     clean_prediction()
     company_data = get_company_data(company_chooser.value)
-    update_aggregated_data(company_data)
+    update_aggregated_current_data(company_data)
     update_current_data('Monthly')
     update_indicator_select()
 
