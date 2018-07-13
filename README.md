@@ -15,7 +15,7 @@ The purpose of this project is to demonstrate how Cassandra can be used for fina
 
 The web application is hosted on AWS and available online. Full step-by-step documentation from project start to deployment is provided. You can reproduce the same application from scratch.
 
-**Application URL:** http://34.202.35.11:5006/CassandraTime
+**Application URL:** http://34.202.35.11:5006/CassandraTime (UPDATE: instance shutted down)
 
 YouTube video (2 min): https://youtu.be/9UKfyR77bG8
 
