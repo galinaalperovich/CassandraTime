@@ -23,3 +23,6 @@ YouTube video (15 min): https://youtu.be/4VBh6UQd6z8
 
 Full documentation with the report read in Documentation.pdf
 
+<p align="center">
+  <img height="600"  src="https://github.com/galinaalperovich/CassandraTime/blob/master/app_screen.png">
+</p>
